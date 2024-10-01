@@ -4,18 +4,22 @@
 
 package frc.robot;
 
+//wpi stuff
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-
+import edu.wpi.first.wpilibj2.command.button.JoystickButton; 
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.util.sendable.SendableRegistry;
 import edu.wpi.first.wpilibj.XboxController;
+
+//vision stuff
+
+
 
 public class Robot extends TimedRobot {
 
@@ -36,13 +40,17 @@ public class Robot extends TimedRobot {
 
   private double start;
 
+
+
   public Robot(){
     SendableRegistry.addChild(robotDrive, leftfront);
     SendableRegistry.addChild(robotDrive, rightfront);
   }
 
+
   @Override
   public void robotInit() {
+    //robot stuff
     leftfront.setInverted(true);
     leftrear.setInverted(true);
     leftarm.setInverted(true);
@@ -50,6 +58,7 @@ public class Robot extends TimedRobot {
     leftrear.follow(leftfront);
     rightrear.follow(rightfront);
     leftarm.follow(rightarm);
+
   }
 
   @Override
@@ -58,24 +67,26 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
+    //setup stuff
     start = Timer.getFPGATimestamp();
   }
 
   @Override
   public void autonomousPeriodic() {
+    
+    //this auto code will move the robot forward for two seconds lol
+  double autotimer = Timer.getFPGATimestamp();
 
-    double autotimer = Timer.getFPGATimestamp();
+  //increase or decrease the two to set the amount of time robot drives forward
+  if(autotimer-start < 2){
+  leftfront.set(0.7);
+  rightfront.set(0.7);
+  }
+  //stop motors after auto ends
+  else{
+    Stopdrive();
+  }
 
-    //increase or decrease the two to set the amount of time robot drives forward
-    if(autotimer-start < 2){
-    leftfront.set(0.7);
-    rightfront.set(0.7);
-    }
-
-    //stop motors after auto ends
-    else{
-      Stopdrive();
-    }
   }
 
 
@@ -144,6 +155,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
+     Stopdrive();
+     Stoparm();
   }
 
   @Override

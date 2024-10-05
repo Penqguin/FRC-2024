@@ -19,8 +19,6 @@ import edu.wpi.first.wpilibj.XboxController;
 
 //vision stuff
 
-
-
 public class Robot extends TimedRobot {
 
   private final WPI_TalonSRX leftfront = new WPI_TalonSRX(1);

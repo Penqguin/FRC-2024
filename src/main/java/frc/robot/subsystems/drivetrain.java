@@ -3,46 +3,64 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+
+
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
+
+import edu.wpi.first.wpilibj.Encoder;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
+import edu.wpi.first.math.kinematics.Odometry;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
+
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI;
+
 // import com.pathplanner.lib.auto.ReplanningConfig;
 
 
 public class drivetrain extends TimedRobot {
 
+    private static drivetrain drivetrain = null; //put this if you want the robot to periodically call this
     // Initializing objects
-    private final WPI_TalonSRX leftfront = new WPI_TalonSRX(1);
-    private final WPI_TalonSRX leftrear = new WPI_TalonSRX(2);
-    private final WPI_TalonSRX rightfront = new WPI_TalonSRX(3);
-    private final WPI_TalonSRX rightrear = new WPI_TalonSRX(4);
-    private final XboxController controller = new XboxController(0); // Sets up object for the controller
 
-    @Override
-    public void robotInit() {
-        // Set up motors to follow and be inverted
+    //Motors and Controller
+    private WPI_TalonSRX leftfront;
+    private WPI_TalonSRX leftrear;
+    private WPI_TalonSRX rightfront;
+    private WPI_TalonSRX rightrear;
+
+    //Gyro stuff
+    private AHRS navx;
+    private Encoder rightEncoder;
+    private Encoder leftEncoder;
+    // private final Rotation2d rotation2d = new Rotation2d();
+    private DifferentialDriveOdometry odometry;
+    public AutoBuilder autoBuilder;
+    
+    private drivetrain(){
+        leftfront = new WPI_TalonSRX(1);
+        leftrear = new WPI_TalonSRX(2);
+        rightfront = new WPI_TalonSRX(3);
+        rightrear = new WPI_TalonSRX(4);
+        navx = new AHRS(SPI.Port.kMXP);
+        rightEncoder = new Encoder(0,1);
+        leftEncoder = new Encoder(0,2);
+        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(navx.getYaw()), leftEncoder.getDistance(), rightEncoder.getDistance());
+        autoBuilder = new AutoBuilder();
+
         leftfront.setInverted(true);
         leftrear.setInverted(true);
 
         leftrear.follow(leftfront);
         rightrear.follow(rightfront);
-    }
+        
+        resetPose();
 
-    @Override
-    public void teleopPeriodic() {
-        double Ljoystick = controller.getLeftY();
-        double Rjoystick = controller.getRightX();
-
-        if (Ljoystick > 0.1 || Ljoystick < -0.1) {
-            Drivecode(Ljoystick, Rjoystick);
-        } else if (Rjoystick > 0.1 || Rjoystick < -0.1) {
-            Drivecode(Ljoystick, Rjoystick);
-        } else {
-            Stopdrive();
-        }
     }
 
     // Methods
@@ -64,30 +82,11 @@ public class drivetrain extends TimedRobot {
         } else {
             Stopdrive();
         }
-    }
+    
 
-    //pathplanner stuff *not working :__ (
+        //pathplanner stuff *not working yet :__ (
 
-    private void getPose() {
-        var gyroAngle = m_gyro.getRotation2d();
-        m_pose = m_odometry.update(gyroAngle,
-        m_leftEncoder.getDistance(),
-        m_rightEncoder.getDistance());
-    }
-
-    private void resetPose() {
-        new Pose2d(0, 0, new Rotation2d());
-    }
-
-    private void getCurrentSpeeds() {
-        
-    }
-
-    private void Drive() {
-        
-    }
-
-      AutoBuilder.configureRamsete(
+        autoBuilder.configureRamsete(
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getCurrentSpeeds, // Current ChassisSpeeds supplier
@@ -105,5 +104,66 @@ public class drivetrain extends TimedRobot {
               return false;
             },
             this // Reference to this subsystem to set requirements
-    );
+    );}
+
+    
+    //auto methods:
+
+    //getPosition (pose)
+    public void getPose(){
+        var gyroAngle = navx.getRotation2d();
+        odometry.update(gyroAngle, leftEncoder.getDistance(), rightEncoder.getDistance() ); 
+    }
+
+    //resetPosition (reset pose)
+    public void resetPose() {
+        leftEncoder.reset();
+        rightEncoder.reset();
+        navx.reset();
+        var gyroAngle = navx.getRotation2d();
+        odometry.update(gyroAngle, leftEncoder.getDistance(), rightEncoder.getDistance() ); 
+    }
+
+    //get Chasis speed (speed methods not working because I need to integrate more variables and functions)
+
+    public ChassisSpeeds getCurrentSpeeds() {
+        double leftSpeed = leftEncoder.getRate();
+        double rightSpeed = rightEncoder.getRate();
+        double angularVelocity = Math.toRadians(navx.getRate()); // Get angular velocity from NavX in rad/s
+        return new ChassisSpeeds(leftSpeed, rightSpeed, angularVelocity);
+    }
+
+    public void drive(double xSpeed, double rot) {
+        var wheelSpeeds = m_kinematics.toWheelSpeeds(new ChassisSpeeds(xSpeed, 0.0, rot));
+        setSpeeds(wheelSpeeds);
+      }
+
+
+
+
+    //sends to operator interface
+    public static drivetrain getInstance(){
+        if (drivetrain == null){
+            drivetrain = new drivetrain();
+        }
+        return drivetrain;
+    }
 }
+
+    //Get Chasis speed
+   
+
+    //Drive with current chasis speed
+
+    /*
+     public void drive(chasis speed){
+        Motor.set(chasis speed)
+        Motor.set(chasis speed)
+     }
+
+
+
+     */
+
+
+

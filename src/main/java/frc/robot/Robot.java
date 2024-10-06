@@ -4,59 +4,16 @@
 
 package frc.robot;
 
-//wpi stuff
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.button.JoystickButton; 
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
-import com.kauailabs.navx.frc.AHRS;
-import edu.wpi.first.wpilibj.SPI;
-import edu.wpi.first.util.sendable.SendableRegistry;
-import edu.wpi.first.wpilibj.XboxController;
 
-//vision stuff
+//We're only gonna use this for initializing path planner and autonomous lol
+
+
 
 public class Robot extends TimedRobot {
 
-  private final WPI_TalonSRX leftfront = new WPI_TalonSRX(1);
-  private final WPI_TalonSRX leftrear = new WPI_TalonSRX(2);
-
-  private final WPI_TalonSRX rightfront = new WPI_TalonSRX(3);
-  private final WPI_TalonSRX rightrear = new WPI_TalonSRX(4);
-
-  //hypothetical arm stuff
-
-  private final WPI_TalonSRX rightarm = new WPI_TalonSRX(5);
-  private final WPI_TalonSRX leftarm = new WPI_TalonSRX(6);
-  
-  private final DifferentialDrive robotDrive = new DifferentialDrive(leftfront, rightfront);
-
-  private final XboxController controller = new XboxController(0);
-
-  private double start;
-
-
-
-  public Robot(){
-    SendableRegistry.addChild(robotDrive, leftfront);
-    SendableRegistry.addChild(robotDrive, rightfront);
-  }
-
-
   @Override
   public void robotInit() {
-    //robot stuff
-    leftfront.setInverted(true);
-    leftrear.setInverted(true);
-    leftarm.setInverted(true);
-
-    leftrear.follow(leftfront);
-    rightrear.follow(rightfront);
-    leftarm.follow(rightarm);
-
   }
 
   @Override
@@ -65,26 +22,10 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousInit() {
-    //setup stuff
-    start = Timer.getFPGATimestamp();
   }
 
   @Override
   public void autonomousPeriodic() {
-    
-    //this auto code will move the robot forward for two seconds lol
-  double autotimer = Timer.getFPGATimestamp();
-
-  //increase or decrease the two to set the amount of time robot drives forward
-  if(autotimer-start < 2){
-  leftfront.set(0.7);
-  rightfront.set(0.7);
-  }
-  //stop motors after auto ends
-  else{
-    Stopdrive();
-  }
-
   }
 
 
@@ -92,59 +33,8 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
   }
 
-  //stop drivemotors function
-  public void Stopdrive(){
-    leftfront.set(0);
-    rightfront.set(0);
-  }
-
-  //stop armmotors function
-  public void Stoparm(){
-    rightarm.set(0);
-  }
-
-  //drivetrain method
-  public void Drivecode(double Leftjoy, double Rightjoy){
-    if (Leftjoy > 0.1 || Leftjoy < -0.1) {
-      leftfront.set(Leftjoy);
-      rightfront.set(Leftjoy);
-    } 
-    else if (Rightjoy > 0.1) {
-      leftfront.set(Rightjoy);
-      rightfront.set(-Rightjoy / 1.5);
-    } 
-    else if (Rightjoy < -0.1) {
-      leftfront.set(-Rightjoy / 1.5);
-      rightfront.set(Rightjoy);
-    } 
-    else {
-      Stopdrive();
-    }
-  }
-
-  //arm method
-    public void Armcode(double Yjoy){
-    if (Yjoy > 0.1 || Yjoy < -0.1) {
-      rightarm.set(Yjoy/2);
-      
-      //add a check to make sure arm stays in it's range 
-    } 
-    else {
-      Stoparm();
-    }
-  } 
-
   @Override
   public void teleopPeriodic() {
-    //joystick inputs
-    double Ljoystick = controller.getLeftY();
-    double Rjoystick = controller.getRightX();
-    double armstick = controller.getRightY();
-
-    //the drive method
-    Drivecode(Ljoystick, Rjoystick);
-    //the arm method
-    Armcode(armstick);
   }
 
   @Override
@@ -153,8 +43,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-     Stopdrive();
-     Stoparm();
   }
 
   @Override

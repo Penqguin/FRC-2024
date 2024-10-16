@@ -99,6 +99,7 @@ public class drivetrain extends TimedRobot {
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getCurrentSpeeds, // Current ChassisSpeeds supplier
             this::drive, // Method that will drive the robot given ChassisSpeeds
+            
             new ReplanningConfig(), // Default path replanning config. See the API for the options here
             () -> {
               // Boolean supplier that controls when the path will be mirrored for the red alliance

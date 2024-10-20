@@ -14,31 +14,17 @@ public class climber extends SubsystemBase {
         ClimbMotor = new WPI_VictorSPX(7); // Initializes the motor controller
     }
 
-    private int[] climbState = {1,2}; // Initializes the climb state as down
-    private int climbIndex = 1;
-    private boolean pastButtonn = false;
-
-    public void Climber(boolean button){
-        if(button != pastButtonn){
-            pastButtonn = button; // acknowledge that the button has been pressed
-            if(climbIndex == 1){
-                climbIndex = 0;
-            }
-            else if(climbIndex == 0){
-                climbIndex = 1;
-            }
-        }
-
-       if(button && climbState[climbIndex] == 1){
+    public void Climber(boolean button1, boolean button2){
+       if(button1){
             ClimbMotor.set(1);
-            // climbIndex =2;
+            //climber up
         }
-        else if(button && climbState[climbIndex] == 2) {
+        else if(button2) {
             ClimbMotor.set(-1);
-            // climbIndex = 1;
+            //climber down
         }
         else{
-            stopMotor();//sigmasigma sigma sigma sigma sigma
+            stopMotor();
         }
     }
 

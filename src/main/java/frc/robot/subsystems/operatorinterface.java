@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.XboxController;
 //import com.ctre.phoenix.motorcontrol.can.WPI_TalonSRX;
 
 public class operatorinterface extends SubsystemBase {
-    private operatorinterface operatorinterface = null; //add comments pls
+    private static operatorinterface oi = null; //add comments pls
     private XboxController controller;
     private drivetrain drive = drivetrain.getInstance();
     private intake getIntake = intake.getInstance();
@@ -28,7 +28,7 @@ public class operatorinterface extends SubsystemBase {
     }
 
     private void updateClimber(){
-        climb.Climber(controller.getXButton());
+        climb.Climber(controller.getYButton(), controller.getXButton());
     }
 
      private void updateArm(){
@@ -44,10 +44,10 @@ public class operatorinterface extends SubsystemBase {
     }
     
     
-    public operatorinterface getInstance(){
-        if (operatorinterface == null){
-            operatorinterface = new operatorinterface();
+    public static operatorinterface getInstance(){
+        if (oi == null){
+            oi = new operatorinterface();
         }
-        return operatorinterface;
+        return oi;
     }
 }

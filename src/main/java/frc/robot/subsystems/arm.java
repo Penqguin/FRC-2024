@@ -25,7 +25,7 @@ public class arm extends SubsystemBase {
         else if(button2){
             ArmMotor.set(-1);
         }
-        else {
+        else{
             stopMotor(); // Stops the motor
         }
     }

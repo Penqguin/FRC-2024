@@ -69,7 +69,7 @@ public class drivetrain extends TimedRobot {
         rightrear.follow(rightfront);
     }
 
-    // Methods
+    //Drive Methods
     private void Stopdrive() {
         leftfront.set(0);
         rightfront.set(0);
@@ -91,10 +91,14 @@ public class drivetrain extends TimedRobot {
     
 
         //pathplanner stuff *not working yet :__ (
-            //edit 10/15/2024 I got it working B) -Shahriar
+       //edit 10/15/2024 I got it working B) -Shahriar
+       //note that the encoder spin rate values will be off because it's not connected to the shaft at the end of the gearbox 
+       //so the code might have to account for gear ratio
 
         autoBuilder = new AutoBuilder();
         AutoBuilder.configureRamsete(
+
+            
             this::getPose, // Robot pose supplier
             this::resetPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getCurrentSpeeds, // Current ChassisSpeeds supplier
@@ -115,8 +119,6 @@ public class drivetrain extends TimedRobot {
             (Subsystem) this // Reference to this subsystem to set requirements
     );
     }
-
-
     
     //auto methods:
 

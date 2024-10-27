@@ -24,7 +24,7 @@ import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 // import com.pathplanner.lib.auto.ReplanningConfig;
 
 
-public class drivetrain extends TimedRobot {
+public class drivetrain extends SubsystemBase {
 
     private static drivetrain drivetrain = null; //put this if you want the robot to periodically call this
     // Initializing objects

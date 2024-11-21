@@ -41,13 +41,14 @@ public class Robot extends TimedRobot {
   /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
-
     drive = drivetrain.getInstance();
+    oi = oi.getInstance();
   }
 
   /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
     CommandScheduler.getInstance().run();
+    oi = oi.getInstance();
   }
 }

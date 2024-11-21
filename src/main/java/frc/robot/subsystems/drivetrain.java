@@ -18,15 +18,9 @@ public class drivetrain extends SubsystemBase {
     }
 
     public void Drive(double Leftjoy, double Rightjoy) {
-        if (Leftjoy > 0.1 || Leftjoy < -0.1) {
-            leftfront.set(Leftjoy);
-            rightfront.set(Leftjoy);
-        } else if (Rightjoy > 0.18) {
-            leftfront.set(-Rightjoy);
-            rightfront.set(Rightjoy);
-        } else if (Rightjoy < -0.18) {
-            leftfront.set(-Rightjoy);
-            rightfront.set(Rightjoy);
+        if (Math.abs(Leftjoy) > 0.1 || Math.abs(Rightjoy) > 0.1) {
+            leftfront.set(Leftjoy - Rightjoy);
+            rightfront.set(Leftjoy + Rightjoy);
         } else {
             Stopdrive();
         }

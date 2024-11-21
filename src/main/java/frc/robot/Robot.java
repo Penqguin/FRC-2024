@@ -7,75 +7,47 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.drivetrain;
-import frc.robot.subsystems.arm;
-import frc.robot.subsystems.intake;
-import frc.robot.subsystems.operatorinterface;
-//might have to import command scheduler if current code doesn't work
-
-
-
-//We're only gonna use this for initializing path planner and autonomous lol
-
-
+import frc.robot.subsystems.oi;
 
 public class Robot extends TimedRobot {
 
-  public drivetrain drive;
-  public operatorinterface oi;
-  public intake Intake;
-  public arm Arm;
+    private drivetrain drive;
+    private oi oi;
 
+    @Override
+    public void robotInit() {
+    }
+
+    @Override
+    public void teleopInit() {
+        drive = drivetrain.getInstance();
+        oi = oi.getInstance();
+    }
+
+    @Override
+    public void teleopPeriodic() {
+        CommandScheduler.getInstance().run();
+        oi.periodic();
+    }
+
+  /** This function is called once when the robot is disabled. */
   @Override
-  public void robotInit() {
-    drive = drivetrain.getInstance();
-    oi= operatorinterface.getInstance();
-    Arm = arm.getInstance();
-    Intake = intake.getInstance();
-  }
+  public void disabledInit() {}
 
+  /** This function is called periodically when disabled. */
   @Override
-  public void robotPeriodic() {
-    CommandScheduler.getInstance().run();
-  }
+  public void disabledPeriodic() {}
 
-  @Override
-  public void autonomousInit() {
-  }
-
-  @Override
-  public void autonomousPeriodic() {
-  }
-
-
-  @Override
-  public void teleopInit() {
-  }
-
-  @Override
-  public void teleopPeriodic() {
-  }
-
-  @Override
-  public void disabledInit() {
-  }
-
-  @Override
-  public void disabledPeriodic() {
-  }
-
+  /** This function is called once when test mode is enabled. */
   @Override
   public void testInit() {
+
+    drive = drivetrain.getInstance();
   }
 
+  /** This function is called periodically during test mode. */
   @Override
   public void testPeriodic() {
-  }
-
-  @Override
-  public void simulationInit() {
-  }
-
-  @Override
-  public void simulationPeriodic() {
+    CommandScheduler.getInstance().run();
   }
 }
